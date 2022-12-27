@@ -2,12 +2,14 @@ package agh.ics.oop;
 
 public class Earth extends AbstractWorldMap{
 
-    public Earth(int x, int y, int copulationCost, boolean mutation, IGrassGenerator grassGenerator, int grassEnergy){
+    public Earth(int x, int y, int copulationCost, boolean mutation, IGrassGenerator grassGenerator, int grassEnergy, int minEnergy){
         this.upperRight = new Vector2d(x, y);
         this.copulationCost = copulationCost;
         this.mutation = mutation;
         this.grassGenerator = grassGenerator;
         this.grassEnergy = grassEnergy;
+        this.grassSpawnAmount = grassSpawnAmount;
+        this.minEnergy = minEnergy;
     }
 
     public void canMoveTo(Animal animal) {
