@@ -3,14 +3,15 @@ package agh.ics.oop;
 
 import java.util.ArrayList;
 
-abstract public class AbstractGenotype {
-    private ArrayList<Integer> genotypeList = new ArrayList<Integer>();
 
-    AbstractGenotype(int length) {
+public class Genotype {
+    private ArrayList<Integer> genotypeList = new ArrayList<>();
+
+    Genotype(int length) {
         createGenotype(length);
     }
 
-    AbstractGenotype(ArrayList<Integer> leftGenotype, int leftEnergy, ArrayList<Integer> rightGenotype, int rightEnergy, boolean mutation) {
+    Genotype(ArrayList<Integer> leftGenotype, int leftEnergy, ArrayList<Integer> rightGenotype, int rightEnergy, boolean mutation) {
         mergeGenotype(leftGenotype, leftEnergy, rightGenotype, rightEnergy);
         if (mutation) mutateGenotype();
         else correctGenotype();
@@ -23,15 +24,28 @@ abstract public class AbstractGenotype {
     }
 
     private void mergeGenotype(ArrayList<Integer> leftGenotype, int leftEnergy, ArrayList<Integer> rightGenotype, int rightEnergy) {
-        
+        boolean isSwapped = false;
+        int breakpoint = (int) Math.floor( ( leftEnergy / ( leftEnergy + rightEnergy ) ) * leftGenotype.size() );
+        if (Math.random() < 0.5) {
+            isSwapped = true;
+            breakpoint = leftGenotype.size() - breakpoint;
+        }
+        for (int i = 0; i < leftGenotype.size(); i++) {
+            if ((i <= breakpoint && !isSwapped) || (i > breakpoint && isSwapped)) this.genotypeList.add(leftGenotype.get(i));
+            else this.genotypeList.add(rightGenotype.get(i));
+        }
     }
 
     private void mutateGenotype() {
-
+        for (int i = 0; i < genotypeList.size(); i++) {
+            if (Math.random() < 0.2) genotypeList.set(i, (int) (Math.random() * 8));
+        }
     }
 
     private void correctGenotype() {
-
+        for (int i = 0; i < genotypeList.size(); i++) {
+            if (Math.random() < 0.2) genotypeList.set(i, genotypeList.get(i));
+        }
     }
 
     public ArrayList<Integer> getGenotypeList() {
