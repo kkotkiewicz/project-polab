@@ -7,7 +7,10 @@ import java.util.ArrayList;
 public class Genotype {
     private ArrayList<Integer> genotypeList = new ArrayList<>();
 
+    private int length;
+
     Genotype(int length) {
+        this.length = length;
         createGenotype(length);
     }
 
@@ -15,6 +18,7 @@ public class Genotype {
         mergeGenotype(leftGenotype, leftEnergy, rightGenotype, rightEnergy);
         if (mutation) mutateGenotype();
         else correctGenotype();
+        this.length = leftGenotype.size();
     }
 
     private void createGenotype(int length) {
@@ -37,13 +41,13 @@ public class Genotype {
     }
 
     private void mutateGenotype() {
-        for (int i = 0; i < genotypeList.size(); i++) {
+        for (int i = 0; i < length; i++) {
             if (Math.random() < 0.2) genotypeList.set(i, (int) (Math.random() * 8));
         }
     }
 
     private void correctGenotype() {
-        for (int i = 0; i < genotypeList.size(); i++) {
+        for (int i = 0; i < length; i++) {
             if (Math.random() < 0.2) genotypeList.set(i, genotypeList.get(i));
         }
     }
@@ -51,4 +55,14 @@ public class Genotype {
     public ArrayList<Integer> getGenotypeList() {
         return genotypeList;
     }
+
+    public int getGene(int position){
+        return genotypeList.get(position);
+    }
+
+    public int getLength(){
+        return this.length;
+    }
+
+
 }
