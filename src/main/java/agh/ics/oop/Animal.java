@@ -11,7 +11,7 @@ public class Animal {
         this.genotype = new Genotype(genotypeLength);
         this.energy = startingEnergy;
         this.location = location;
-        this.direction.intToDirection((int) (Math.random() * 7));
+        this.direction.intToDirection((int) (Math.random() * 8));
         this.genotypePosition = (int) (Math.random() * genotype.getGenotypeList().size());
     }
 
@@ -19,7 +19,7 @@ public class Animal {
         this.genotype = new Genotype(firstParent.getGenotype().getGenotypeList(), firstParent.getEnergy(), secondParent.getGenotype().getGenotypeList(), secondParent.getEnergy(), mutation);
         this.energy = (int) (Math.floor(firstParent.getEnergy() * fractionOfEnergy) + Math.floor(secondParent.getEnergy() * fractionOfEnergy));
         this.location = new Vector2d(firstParent.getLocation().getX(), firstParent.getLocation().getY());
-        this.direction = this.direction.intToDirection((int) (Math.random() * 7));
+        this.direction.intToDirection((int) (Math.random() * 8));
         this.genotypePosition = (int) (Math.random() * genotype.getGenotypeList().size());
     }
 
