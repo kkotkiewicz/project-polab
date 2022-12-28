@@ -49,6 +49,9 @@ public class Animal implements IMapElement{
     public void changeEnergy(int x){
         this.energy = x;
     }
+    public void addChild(){
+        this.childrenCount+=1;
+    }
     public int getGenotypePosition() {
         return genotypePosition;
     }
@@ -76,4 +79,5 @@ public class Animal implements IMapElement{
         map.canMoveTo(this);
         this.genotypePosition = (this.genotypePosition+1)%this.genotype.getLength();
     }
+
 }

@@ -20,7 +20,9 @@ public class Hell extends AbstractWorldMap{
             location = new Vector2d(x, y);
             animal.changeEnergy((-1)*this.copulationCost);
         }
+        this.removeAnimal(animal);
         animal.setLocation(location);
+        this.place(animal);
     }
 
 

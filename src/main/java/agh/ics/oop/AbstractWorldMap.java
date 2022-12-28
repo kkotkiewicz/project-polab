@@ -1,9 +1,13 @@
 package agh.ics.oop;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Collections;
 
 public abstract class AbstractWorldMap {
+    protected CompareAnimals comparator = new CompareAnimals();
     protected Vector2d bottomLeft = new Vector2d(0, 0);
     protected Vector2d upperRight;
     protected int copulationCost;
@@ -31,6 +35,8 @@ public abstract class AbstractWorldMap {
             this.animalPositions.put(animal.getLocation(), new ArrayList<Animal>());
         }
         this.animalPositions.get(animal.getLocation()).add(animal);
+        Collections.sort(this.animalPositions.get(animal.getLocation()), comparator);
+
     }
 
     public void copulation(Animal animal1, Animal animal2){
@@ -38,6 +44,9 @@ public abstract class AbstractWorldMap {
         this.place(child);
         animal1.changeEnergy((-1)*this.copulationCost);
         animal2.changeEnergy((-1)*this.copulationCost);
+        animal1.addChild();
+        animal2.addChild();
+        Collections.sort(this.animalPositions.get(animal1.getLocation()), comparator);
     }
 
     public void bigCopulation(){
@@ -48,6 +57,7 @@ public abstract class AbstractWorldMap {
                 }
             }
         }
+
     }
 
     public void removeAnimal(Animal animal){
@@ -87,6 +97,7 @@ public abstract class AbstractWorldMap {
     public void feast(Vector2d location, Animal animal){
         animal.changeEnergy(this.grassEnergy);
         this.plantPositions.remove(location);
+        Collections.sort(this.animalPositions.get(animal.getLocation()), comparator);
     }
 
     public void bigFeast(){
@@ -106,4 +117,5 @@ public abstract class AbstractWorldMap {
             }
         }
     }
+
 }
