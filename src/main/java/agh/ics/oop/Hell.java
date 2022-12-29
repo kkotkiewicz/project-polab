@@ -1,5 +1,7 @@
 package agh.ics.oop;
 
+import java.util.HashMap;
+
 public class Hell extends AbstractWorldMap{
 
     public Hell(int x, int y, int copulationCost, boolean mutation, IGrassGenerator grassGenerator, int grassEnergy, int grassSpawnAmount, int minEnergy){
@@ -10,6 +12,8 @@ public class Hell extends AbstractWorldMap{
         this.grassEnergy = grassEnergy;
         this.grassSpawnAmount = grassSpawnAmount;
         this.minEnergy = minEnergy;
+        this.animalPositions = new HashMap<>();
+        this.plantPositions = new HashMap<>();
     }
 
     public void canMoveTo(Animal animal){

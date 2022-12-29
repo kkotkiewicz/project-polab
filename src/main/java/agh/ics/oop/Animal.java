@@ -15,7 +15,7 @@ public class Animal implements IMapElement{
         this.genotype = new Genotype(genotypeLength);
         this.energy = startingEnergy;
         this.location = location;
-        this.direction.intToDirection((int) (Math.random() * 8));
+        this.direction = this.direction.intToDirection((int) (Math.random() * 8));
         this.genotypePosition = (int) (Math.random() * genotype.getGenotypeList().size());
         this.map = map;
         this.isShuffle = isShuffle;
@@ -25,7 +25,7 @@ public class Animal implements IMapElement{
         this.genotype = new Genotype(firstParent.getGenotype().getGenotypeList(), firstParent.getEnergy(), secondParent.getGenotype().getGenotypeList(), secondParent.getEnergy(), mutation);
         this.energy = startingEnergy;
         this.location = new Vector2d(firstParent.getLocation().getX(), firstParent.getLocation().getY());
-        this.direction.intToDirection((int) (Math.random() * 8));
+        this.direction = this.direction.intToDirection((int) (Math.random() * 8));
         this.genotypePosition = (int) (Math.random() * genotype.getGenotypeList().size());
         this.map = map;
         this.isShuffle = isShuffle;
@@ -65,7 +65,17 @@ public class Animal implements IMapElement{
         return childrenCount;
     }
     public String toString() {
-        return location.toString() + " " + energy;
+        switch (this.direction) {
+            case EAST: return "→";
+            case WEST: return "←";
+            case NORTH: return "↑";
+            case SOUTH: return "↓";
+            case NORTHEAST: return "⬈";
+            case NORTHWEST: return "⬉";
+            case SOUTHEAST: return "⬊";
+            case SOUTHWEST: return "⬋";
+        }
+        return "";
     }
 
     public void move(){
@@ -74,8 +84,9 @@ public class Animal implements IMapElement{
                 genotypePosition = (int) (Math.random() * genotype.getLength());
             }
         }
-
-        this.direction.intToDirection((this.direction.toInt()+this.genotype.getGene(genotypePosition))%8);
+        int currentMove = this.genotype.getGene(this.genotypePosition);
+        int currentDirection = this.direction.toInt();
+        this.direction = this.direction.intToDirection((currentMove + currentDirection) % 8);
         map.canMoveTo(this);
         this.genotypePosition = (this.genotypePosition+1)%this.genotype.getLength();
     }

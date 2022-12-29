@@ -84,7 +84,7 @@ public abstract class AbstractWorldMap {
         return false;
     }
 
-    public IMapElement ObjectAt(Vector2d location){
+    public IMapElement objectAt(Vector2d location){
         if(this.animalPositions.containsKey(location)){
             return this.animalPositions.get(location).get(0);
         }
