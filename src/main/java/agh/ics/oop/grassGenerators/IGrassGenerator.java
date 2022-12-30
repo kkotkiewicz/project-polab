@@ -1,4 +1,7 @@
-package agh.ics.oop;
+package agh.ics.oop.grassGenerators;
+
+import agh.ics.oop.attributes.Vector2d;
+import agh.ics.oop.mapElements.Plant;
 
 import java.util.HashMap;
 

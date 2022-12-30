@@ -1,6 +1,13 @@
-package agh.ics.oop;
+package agh.ics.oop.mapElements;
 
-public class Animal implements IMapElement{
+import agh.ics.oop.attributes.Genotype;
+import agh.ics.oop.attributes.MapDirection;
+import agh.ics.oop.attributes.Vector2d;
+import agh.ics.oop.maps.AbstractWorldMap;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+
+public class Animal implements IMapElement {
 
     private Genotype genotype;
     private int genotypePosition;
@@ -11,7 +18,7 @@ public class Animal implements IMapElement{
     private AbstractWorldMap map;
     private int birthDate;
     private int childrenCount = 0;
-    Animal (int startingEnergy, int genotypeLength, Vector2d location, AbstractWorldMap map, boolean isShuffle) {
+    public Animal(int startingEnergy, int genotypeLength, Vector2d location, AbstractWorldMap map, boolean isShuffle) {
         this.genotype = new Genotype(genotypeLength);
         this.energy = startingEnergy;
         this.location = location;
@@ -21,7 +28,7 @@ public class Animal implements IMapElement{
         this.isShuffle = isShuffle;
         this.birthDate = 0;
     }
-    Animal (Animal firstParent, Animal secondParent, int startingEnergy, boolean mutation, AbstractWorldMap map, boolean isShuffle, int birthDate) {
+    public Animal(Animal firstParent, Animal secondParent, int startingEnergy, boolean mutation, AbstractWorldMap map, boolean isShuffle, int birthDate) {
         this.genotype = new Genotype(firstParent.getGenotype().getGenotypeList(), firstParent.getEnergy(), secondParent.getGenotype().getGenotypeList(), secondParent.getEnergy(), mutation);
         this.energy = startingEnergy;
         this.location = new Vector2d(firstParent.getLocation().getX(), firstParent.getLocation().getY());
@@ -47,7 +54,7 @@ public class Animal implements IMapElement{
         return energy;
     }
     public void changeEnergy(int x){
-        this.energy = x;
+        this.energy += x;
     }
     public void addChild(){
         this.childrenCount+=1;
@@ -76,6 +83,22 @@ public class Animal implements IMapElement{
             case SOUTHWEST: return "⬋";
         }
         return "";
+    }
+
+    @Override
+    public Circle toShape(int startingEnergy, int size) {
+        Circle circle = new Circle();
+        circle.setRadius(size);
+        double colorValue =  (double) (this.getEnergy()) / (double) (startingEnergy);
+        if (colorValue > 1) {
+            circle.setFill(Color.rgb(255, 0, 0));
+        }
+        else {
+            int color = (int) (255*colorValue);
+
+            circle.setFill(Color.rgb(color,0,0));
+        }
+        return circle;
     }
 
     public void move(){

@@ -1,4 +1,4 @@
-package agh.ics.oop;
+package agh.ics.oop.attributes;
 
 
 import java.util.ArrayList;
@@ -9,12 +9,12 @@ public class Genotype {
 
     private int length;
 
-    Genotype(int length) {
+    public Genotype(int length) {
         this.length = length;
         createGenotype(length);
     }
 
-    Genotype(ArrayList<Integer> leftGenotype, int leftEnergy, ArrayList<Integer> rightGenotype, int rightEnergy, boolean mutation) {
+    public Genotype(ArrayList<Integer> leftGenotype, int leftEnergy, ArrayList<Integer> rightGenotype, int rightEnergy, boolean mutation) {
         mergeGenotype(leftGenotype, leftEnergy, rightGenotype, rightEnergy);
         if (mutation) mutateGenotype();
         else correctGenotype();

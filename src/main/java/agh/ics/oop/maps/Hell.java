@@ -1,8 +1,12 @@
-package agh.ics.oop;
+package agh.ics.oop.maps;
+
+import agh.ics.oop.mapElements.Animal;
+import agh.ics.oop.grassGenerators.IGrassGenerator;
+import agh.ics.oop.attributes.Vector2d;
 
 import java.util.HashMap;
 
-public class Hell extends AbstractWorldMap{
+public class Hell extends AbstractWorldMap {
 
     public Hell(int x, int y, int copulationCost, boolean mutation, IGrassGenerator grassGenerator, int grassEnergy, int grassSpawnAmount, int minEnergy){
         this.upperRight = new Vector2d(x, y);

@@ -1,5 +1,7 @@
 package agh.ics.oop;
 
+import agh.ics.oop.mapElements.Animal;
+
 import java.util.Comparator;
 
 public class CompareAnimals implements Comparator<Animal> {

@@ -1,8 +1,13 @@
-package agh.ics.oop;
+package agh.ics.oop.maps;
+
+import agh.ics.oop.*;
+import agh.ics.oop.attributes.Vector2d;
+import agh.ics.oop.grassGenerators.IGrassGenerator;
+import agh.ics.oop.mapElements.Animal;
+import agh.ics.oop.mapElements.IMapElement;
+import agh.ics.oop.mapElements.Plant;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Collections;
 
@@ -30,6 +35,10 @@ public abstract class AbstractWorldMap {
         this.daysPassed+=1;
     }
 
+    public Vector2d getUpperRight(){
+        return this.upperRight;
+    }
+
     public void place(Animal animal) {
         if(!this.animalPositions.containsKey(animal.getLocation())){
             this.animalPositions.put(animal.getLocation(), new ArrayList<Animal>());
@@ -39,7 +48,7 @@ public abstract class AbstractWorldMap {
 
     }
 
-    public void copulation(Animal animal1, Animal animal2){
+    public Animal copulation(Animal animal1, Animal animal2){
         Animal child = new Animal(animal1, animal2, 2*this.copulationCost, mutation, this, isShuffle, this.daysPassed);
         this.place(child);
         animal1.changeEnergy((-1)*this.copulationCost);
@@ -47,17 +56,19 @@ public abstract class AbstractWorldMap {
         animal1.addChild();
         animal2.addChild();
         Collections.sort(this.animalPositions.get(animal1.getLocation()), comparator);
+        return child;
     }
 
-    public void bigCopulation(){
+    public ArrayList<Animal> bigCopulation(){
+        ArrayList<Animal> children = new ArrayList<>();
         for(Vector2d key: this.animalPositions.keySet()){
             if(this.animalPositions.get(key).size()>1){
-                if(this.animalPositions.get(key).get(1).getEnergy()>this.minEnergy){
-                    this.copulation(this.animalPositions.get(key).get(0), this.animalPositions.get(key).get(1));
+                if(this.animalPositions.get(key).get(1).getEnergy()>this.minEnergy && this.animalPositions.get(key).get(0).getEnergy()>this.minEnergy){
+                    children.add(this.copulation(this.animalPositions.get(key).get(0), this.animalPositions.get(key).get(1)));
                 }
             }
         }
-
+        return children;
     }
 
     public void removeAnimal(Animal animal){
@@ -67,14 +78,16 @@ public abstract class AbstractWorldMap {
         }
     }
 
-    public void bigRemoval(){
+    public ArrayList<Animal> bigRemoval(){
+        ArrayList<Animal> toRemove = new ArrayList<>();
         for(ArrayList<Animal> animals: this.animalPositions.values()){
             for(Animal animal: animals){
                 if(animal.getEnergy()<=0){
-                    this.removeAnimal(animal);
+                    toRemove.add(animal);
                 }
             }
         }
+        return toRemove;
     }
 
     public boolean isOccupied(Vector2d location){
@@ -108,8 +121,8 @@ public abstract class AbstractWorldMap {
         }
     }
 
-    public void generateGrass(int quantity) {
-        for (int i = 0; i < quantity; i++) {
+    public void generateGrass() {
+        for (int i = 0; i < this.grassSpawnAmount; i++) {
             Vector2d newPosition = grassGenerator.generateGrass(this.plantPositions);
             if (newPosition != null) {
                 Plant newPlant = new Plant(newPosition);
