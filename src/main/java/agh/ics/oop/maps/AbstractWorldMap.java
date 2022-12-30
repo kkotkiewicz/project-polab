@@ -31,6 +31,10 @@ public abstract class AbstractWorldMap {
 
     protected HashMap<Vector2d, Plant> plantPositions;
 
+    public int getDaysPassed() {
+        return daysPassed;
+    }
+
     public void nextDay(){
         this.daysPassed+=1;
     }
@@ -44,8 +48,8 @@ public abstract class AbstractWorldMap {
             this.animalPositions.put(animal.getLocation(), new ArrayList<Animal>());
         }
         this.animalPositions.get(animal.getLocation()).add(animal);
-        Collections.sort(this.animalPositions.get(animal.getLocation()), comparator);
-
+//        Collections.sort(this.animalPositions.get(animal.getLocation()), comparator);
+        this.animalPositions.get(animal.getLocation()).sort(comparator);
     }
 
     public Animal copulation(Animal animal1, Animal animal2){
@@ -72,6 +76,7 @@ public abstract class AbstractWorldMap {
     }
 
     public void removeAnimal(Animal animal){
+        animal.die(this.daysPassed);
         this.animalPositions.get(animal.getLocation()).remove(animal);
         if(this.animalPositions.get(animal.getLocation()).size()==0){
             this.animalPositions.remove(animal.getLocation());
@@ -84,6 +89,7 @@ public abstract class AbstractWorldMap {
             for(Animal animal: animals){
                 if(animal.getEnergy()<=0){
                     toRemove.add(animal);
+                    animal.setStatus();
                 }
             }
         }
@@ -109,6 +115,7 @@ public abstract class AbstractWorldMap {
 
     public void feast(Vector2d location, Animal animal){
         animal.changeEnergy(this.grassEnergy);
+        animal.addGrass();
         this.plantPositions.remove(location);
         Collections.sort(this.animalPositions.get(animal.getLocation()), comparator);
     }

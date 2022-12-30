@@ -2,6 +2,7 @@ package agh.ics.oop.attributes;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class Genotype {
@@ -63,6 +64,7 @@ public class Genotype {
     public int getLength(){
         return this.length;
     }
+
 
 
 }

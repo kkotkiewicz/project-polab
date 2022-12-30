@@ -18,6 +18,9 @@ public class Animal implements IMapElement {
     private AbstractWorldMap map;
     private int birthDate;
     private int childrenCount = 0;
+    private int grassCount = 0;
+    private boolean isAlive = true;
+    private int deathDate;
     public Animal(int startingEnergy, int genotypeLength, Vector2d location, AbstractWorldMap map, boolean isShuffle) {
         this.genotype = new Genotype(genotypeLength);
         this.energy = startingEnergy;
@@ -59,6 +62,8 @@ public class Animal implements IMapElement {
     public void addChild(){
         this.childrenCount+=1;
     }
+    public void addGrass() {this.grassCount+=1;}
+    public void die(int deathDate){this.deathDate = deathDate;}
     public int getGenotypePosition() {
         return genotypePosition;
     }
@@ -70,6 +75,18 @@ public class Animal implements IMapElement {
     }
     public int getChildrenCount() {
         return childrenCount;
+    }
+    public void setStatus() {
+        isAlive = false;
+    }
+    public boolean getIsAlive() {
+        return isAlive;
+    }
+    public int getDeathDate() {
+        return deathDate;
+    }
+    public int getGrassCount() {
+        return grassCount;
     }
     public String toString() {
         switch (this.direction) {

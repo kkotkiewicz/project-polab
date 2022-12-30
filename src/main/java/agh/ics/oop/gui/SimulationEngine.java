@@ -23,6 +23,7 @@ public class SimulationEngine implements Runnable{
 
     private List<App> observers = new ArrayList<>();
 
+
     public int getStartingEnergy(){
         return this.startingEnergy;
     }
@@ -92,6 +93,8 @@ public class SimulationEngine implements Runnable{
                 throw new RuntimeException(e);
             }
             System.out.println(this.animals.size());
+
+            map.nextDay();
 
         }
     }
