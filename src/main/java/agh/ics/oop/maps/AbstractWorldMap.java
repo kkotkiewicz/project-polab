@@ -20,6 +20,9 @@ public abstract class AbstractWorldMap {
     protected boolean mutation;
     protected boolean isShuffle;
     protected int daysPassed = 0;
+    protected int[][] deadAnimals;
+    protected ArrayList<Vector2d> availblePositions;
+    protected ArrayList<Vector2d> notPrePositions;
 
     protected IGrassGenerator grassGenerator;
     protected int grassEnergy;
@@ -80,6 +83,11 @@ public abstract class AbstractWorldMap {
         this.animalPositions.get(animal.getLocation()).remove(animal);
         if(this.animalPositions.get(animal.getLocation()).size()==0){
             this.animalPositions.remove(animal.getLocation());
+            this.deadAnimals[animal.getLocation().getX()][animal.getLocation().getY()] += 1;
+            this.availblePositions.remove(animal.getLocation());
+            if (!notPrePositions.contains(animal.getLocation())) {
+                notPrePositions.add(animal.getLocation());
+            }
         }
     }
 
@@ -117,7 +125,7 @@ public abstract class AbstractWorldMap {
         animal.changeEnergy(this.grassEnergy);
         animal.addGrass();
         this.plantPositions.remove(location);
-        Collections.sort(this.animalPositions.get(animal.getLocation()), comparator);
+        this.animalPositions.get(animal.getLocation()).sort(comparator);
     }
 
     public void bigFeast(){
@@ -130,7 +138,7 @@ public abstract class AbstractWorldMap {
 
     public void generateGrass() {
         for (int i = 0; i < this.grassSpawnAmount; i++) {
-            Vector2d newPosition = grassGenerator.generateGrass(this.plantPositions);
+            Vector2d newPosition = grassGenerator.generateGrass(this.plantPositions, this.deadAnimals, this.availblePositions, this.notPrePositions);
             if (newPosition != null) {
                 Plant newPlant = new Plant(newPosition);
                 plantPositions.put(newPosition, newPlant);

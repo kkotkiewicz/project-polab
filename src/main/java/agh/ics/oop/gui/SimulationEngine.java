@@ -21,23 +21,23 @@ public class SimulationEngine implements Runnable{
 
 
 
-    private List<App> observers = new ArrayList<>();
+    private List<SimulationParameters> observers = new ArrayList<>();
 
 
     public int getStartingEnergy(){
         return this.startingEnergy;
     }
 
-    public void addObserver(App observer){
+    public void addObserver(SimulationParameters observer){
         this.observers.add(observer);
     }
 
-    public void removeObserver(App observer){
+    public void removeObserver(SimulationParameters observer){
         this.observers.remove(observer);
     }
 
     public void refreshObserver(){
-        for(App observer: observers){
+        for(SimulationParameters observer: observers){
             observer.refresh();
         }
     }

@@ -58,6 +58,9 @@ public class Animal implements IMapElement {
     }
     public void changeEnergy(int x){
         this.energy += x;
+        if (this.energy < 0) {
+            this.energy = 0;
+        }
     }
     public void addChild(){
         this.childrenCount+=1;

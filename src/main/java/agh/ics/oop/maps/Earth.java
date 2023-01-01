@@ -4,6 +4,7 @@ import agh.ics.oop.mapElements.Animal;
 import agh.ics.oop.grassGenerators.IGrassGenerator;
 import agh.ics.oop.attributes.Vector2d;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Earth extends AbstractWorldMap {
@@ -19,6 +20,15 @@ public class Earth extends AbstractWorldMap {
         this.animalPositions = new HashMap<>();
         this.plantPositions = new HashMap<>();
         this.grassSpawnAmount = grassSpawnAmount;
+        this.deadAnimals = new int[x][y];
+        this.availblePositions = new ArrayList<>();
+        for (int i = 0; i < x; i++) {
+            for (int j = 0; j < y; j++) {
+                this.deadAnimals[i][j] = 0;
+                this.availblePositions.add(new Vector2d(i, j));
+            }
+        }
+        this.notPrePositions = new ArrayList<>();
     }
 
     public void canMoveTo(Animal animal) {
