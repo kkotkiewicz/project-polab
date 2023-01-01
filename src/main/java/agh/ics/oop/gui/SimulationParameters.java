@@ -25,14 +25,18 @@ public class SimulationParameters {
     private AbstractWorldMap map;
     private IGrassGenerator grassGenerator;
     private SimulationEngine simulationEngine;
-    private int height = 600;
+    private int height = 700;
     private Vector2d upperRight;
     private boolean isRunning;
     private VBox vBox = new VBox();
     private VBox animalInformation;
+    private VBox simulationInformation;
+    private HBox bottomBox;
     private Animal observedAnimal;
+    private Circle observedSource;
     private GridPane gridPane = new GridPane();
     private boolean isObserved = false;
+    private int radius;
 
 
     public SimulationParameters(HashMap<String, String> parameters) {
@@ -44,6 +48,7 @@ public class SimulationParameters {
         else{
             this.grassGenerator = new ToxicGrassGenerator(width, height);
         }
+        int plantsAtStart = Integer.parseInt(parameters.get("plantsAtStart"));
         int numOfPlants = Integer.parseInt(parameters.get("numOfPlants"));
         int plantEnergy = Integer.parseInt(parameters.get("plantEnergy"));
         int numOfAnimals = Integer.parseInt(parameters.get("numOfAnimals"));
@@ -51,6 +56,8 @@ public class SimulationParameters {
         int minEnergy = Integer.parseInt(parameters.get("minEnergy"));
         int copulationCost = Integer.parseInt(parameters.get("copulationCost"));
         int genotypeLength = Integer.parseInt(parameters.get("genotypeLength"));
+        int minMutation = Integer.parseInt(parameters.get("minMutation"));
+        int maxMutation = Integer.parseInt(parameters.get("maxMutation"));
         boolean mutation = false;
         if(parameters.get("mutation").equals("true")){
             mutation = true;
@@ -60,15 +67,23 @@ public class SimulationParameters {
             isShuffle = true;
         }
         if(parameters.get("map").equals("earth")){
-            this.map = new Earth(width, height, copulationCost, mutation, grassGenerator, plantEnergy, minEnergy, numOfPlants);
+            this.map = new Earth(width, height, copulationCost, mutation, grassGenerator, plantEnergy, minEnergy, numOfPlants, plantsAtStart, minMutation, maxMutation);
         }
         else{
-            this.map = new Hell(width, height, copulationCost, mutation, grassGenerator, plantEnergy, minEnergy, numOfPlants);
+            this.map = new Hell(width, height, copulationCost, mutation, grassGenerator, plantEnergy, minEnergy, numOfPlants, plantsAtStart, minMutation, maxMutation);
         }
         this.simulationEngine = new SimulationEngine(this.map, numOfAnimals, startingEnergy, genotypeLength, 10, isShuffle);
         simulationEngine.addObserver(this);
-        vBox.getChildren().add(gridPane);
         this.upperRight = this.map.getUpperRight();
+        this.radius = ((this.height/(this.upperRight.getY()+1))/3);
+        this.bottomBox = new HBox();
+        this.animalInformation = new VBox();
+        this.animalInformation.setMinWidth(200);
+        this.simulationInformation = new VBox();
+        this.bottomBox.getChildren().addAll(animalInformation, simulationInformation);
+        this.bottomBox.setMinWidth(800);
+        this.bottomBox.setSpacing(100);
+        this.vBox.setSpacing(50);
     }
 
 
@@ -82,11 +97,25 @@ public class SimulationParameters {
             if (isObserved) {
                 refreshAnimal();
             }
+            refreshSimulationParameters();
         });
     }
 
     private void clickGrid(MouseEvent event) {
-        Node source = (Node) event.getSource();
+        if (isObserved) {
+            double colorValue =  (double) (observedAnimal.getEnergy()) / (double) (this.simulationEngine.getStartingEnergy());
+            if (colorValue > 1) {
+                this.observedSource.setFill((Color.rgb(255, 0, 0)));
+            }
+            else {
+                this.observedSource.setFill(Color.rgb((int) (255 * colorValue), 0, 0));
+            }
+            this.observedSource.setRadius(radius);
+        }
+        Circle source = (Circle) event.getSource();
+        this.observedSource = source;
+        source.setFill(Color.BLUE);
+        source.setRadius(1.5 * radius);
         GridPane p = (GridPane) source.getParent();
         int colIndex = p.getColumnIndex(source) - 1;
         int rowIndex = map.getUpperRight().getY() - p.getRowIndex(source) + 1;
@@ -96,11 +125,10 @@ public class SimulationParameters {
             if (this.map.objectAt(position).getClass() == Animal.class) {
                 this.observedAnimal = (Animal) this.map.objectAt(position);
                 this.vBox.getChildren().remove(animalInformation);
-                this.animalInformation = new VBox();
+
                 if (!isObserved) {
                     this.isObserved = true;
                 }
-                vBox.getChildren().add(animalInformation);
                 refreshAnimal();
             }
         }
@@ -159,12 +187,48 @@ public class SimulationParameters {
             animalInformation.getChildren().add(deathDate);
         }
     }
+    public void refreshSimulationParameters() {
+        this.simulationInformation.getChildren().clear();
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append(this.simulationEngine.getNumOfAnimals());
+        Label numOfAnimals = new Label("Number of animals: " + stringBuilder.toString());
+        this.simulationInformation.getChildren().add(numOfAnimals);
+        stringBuilder.delete(0, stringBuilder.length());
+
+        stringBuilder.append(this.simulationEngine.getNumOfPlants());
+        Label numOfPlants = new Label("Number of plants: " + stringBuilder.toString());
+        this.simulationInformation.getChildren().add(numOfPlants);
+        stringBuilder.delete(0, stringBuilder.length());
+
+        stringBuilder.append(this.simulationEngine.getAverageEnergy());
+        Label averageEnergy = new Label("Average Energy: " + stringBuilder.toString());
+        this.simulationInformation.getChildren().add(averageEnergy);
+        stringBuilder.delete(0, stringBuilder.length());
+
+        stringBuilder.append(this.simulationEngine.getAverageLifespan());
+        Label averageLifespan = new Label("Average lifespan: " + stringBuilder.toString());
+        this.simulationInformation.getChildren().add(averageLifespan);
+        stringBuilder.delete(0, stringBuilder.length());
+
+        stringBuilder.append(this.simulationEngine.getFreeSpace());
+        Label freeSpace = new Label("Number of free spaces: " + stringBuilder.toString());
+        this.simulationInformation.getChildren().add(freeSpace);
+        stringBuilder.delete(0, stringBuilder.length());
+
+        Label mostCommon = new Label("Most common genotype: " + this.simulationEngine.getMostCommonGene().toString());
+        this.simulationInformation.getChildren().add(mostCommon);
+        stringBuilder.delete(0, stringBuilder.length());
+
+
+    }
 
     public void createGrid() {
         int height = this.height/(this.upperRight.getY()+1);
         int width = this.height/(this.upperRight.getY()+1);
 
-        int radius = ((this.height/(this.upperRight.getY()+1))/5);
+
         Label firstLabel = new Label("x/y");
 
         gridPane.getColumnConstraints().add(new ColumnConstraints(width));
@@ -197,13 +261,17 @@ public class SimulationParameters {
 
         for (int i = lowerLeft.getX(); i <= upperRight.getX(); i++) {
             for (int j = upperRight.getY(); j>= lowerLeft.getY(); j--) {
-                if (!map.isOccupied(new Vector2d(i,j))) {
-                    continue;
+                if (map.isOccupied(new Vector2d(i,j))) {
+                    Circle circle = map.objectAt(new Vector2d(i,j)).toShape(this.simulationEngine.getStartingEnergy(), radius);
+                    circle.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> clickGrid(e));
+                    if (map.objectAt(new Vector2d(i, j)).equals(observedAnimal)) {
+                        circle.setFill(Color.BLUE);
+                        circle.setRadius(1.5 * radius);
+                    }
+                    gridPane.add(circle, 1 + i - lowerLeft.getX(), 1 + upperRight.getY() - j,1,1);
+                    GridPane.setHalignment(circle, HPos.CENTER);
                 }
-                Circle circle = map.objectAt(new Vector2d(i,j)).toShape(this.simulationEngine.getStartingEnergy(), radius);
-                circle.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> clickGrid(e));
-                gridPane.add(circle, 1 + i - lowerLeft.getX(), 1 + upperRight.getY() - j,1,1);
-                GridPane.setHalignment(circle, HPos.CENTER);
+
             }
         }
         gridPane.setGridLinesVisible(true);
@@ -234,5 +302,8 @@ public class SimulationParameters {
 
     public boolean getIsRunning() {
         return isRunning;
+    }
+    public HBox getBottomBox() {
+        return bottomBox;
     }
 }

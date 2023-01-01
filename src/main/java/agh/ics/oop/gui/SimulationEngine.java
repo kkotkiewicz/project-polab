@@ -17,11 +17,56 @@ public class SimulationEngine implements Runnable{
     private final int startingEnergy;
     private final int genotypeLength;
     private final boolean isShuffle;
+    private int numOfAnimals = 0;
+    private int numOfPlants = 0;
+    private int averageEnergy = 0;
+    private double averageLifespan = 0;
+    private String mostCommonGene="";
+    private int freeSpace = 0;
+
 //    private MapVisualizer visualizer;
 
 
 
     private List<SimulationParameters> observers = new ArrayList<>();
+
+    public int getNumOfAnimals(){
+        return this.numOfAnimals;
+    }
+
+    public void uptadeNumOfAnimals(){
+        this.numOfAnimals = animals.size();
+    }
+
+    public int getNumOfPlants(){
+        return this.numOfPlants;
+    }
+
+    public int getAverageEnergy(){
+        return this.averageEnergy;
+    }
+
+    public void uptadeAverageEnergy(){
+        int sum = 0;
+        for(Animal animal: animals){
+            sum+=animal.getEnergy();
+        }
+        this.averageEnergy = (int) (sum/this.animals.size());
+    }
+
+    public double getAverageLifespan() {
+        return this.averageLifespan;
+    }
+
+    public String getMostCommonGene(){
+        return this.mostCommonGene;
+    }
+
+    public int getFreeSpace(){
+        return this.freeSpace;
+    }
+
+
 
 
     public int getStartingEnergy(){
@@ -64,9 +109,13 @@ public class SimulationEngine implements Runnable{
         this.map.generateGrass();
     }
 
+    public void writeToCSV(){
+        
+    }
+
     @Override
     public void run() {
-        for(int i=0; i<1000; i++){
+        while(!animals.isEmpty()){
 //            System.out.println(visualizer.draw(new Vector2d(0,0), new Vector2d(map.getUpperRight().getX() - 1, map.getUpperRight().getY() - 1)));
 //            System.out.println(animals.size());
             ArrayList<Animal> toRemove = this.map.bigRemoval();
@@ -92,9 +141,17 @@ public class SimulationEngine implements Runnable{
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            System.out.println(this.animals.size());
+
+            this.mostCommonGene = map.getMostCommonGene();
+            this.uptadeNumOfAnimals();
+            this.numOfPlants = map.getNumOfPlants();
+            this.uptadeAverageEnergy();
+            this.averageLifespan = map.getAverageLifespan();
+            this.freeSpace = map.getFreeSpace();
 
             map.nextDay();
+
+
 
         }
     }

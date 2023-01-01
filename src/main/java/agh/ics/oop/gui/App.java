@@ -14,6 +14,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -158,9 +159,13 @@ public class App extends Application {
 
         parameters.createGrid();
 
+        VBox container = new VBox();
+        container.getChildren().add(stopButton);
+        container.getChildren().add(parameters.getGridPane());
         parameters.getvBox().getChildren().add(stopButton);
-        parameters.getvBox().getChildren().add(gridPane);
-        scene = new Scene(parameters.getvBox(), 700, 700);
+        parameters.getvBox().getChildren().add(container);
+        parameters.getvBox().getChildren().add(parameters.getBottomBox());
+        scene = new Scene(parameters.getvBox(), 1200, 900);
         stage.setScene(scene);
         stage.show();
     }

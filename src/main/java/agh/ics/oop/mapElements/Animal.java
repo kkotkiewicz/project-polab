@@ -31,8 +31,8 @@ public class Animal implements IMapElement {
         this.isShuffle = isShuffle;
         this.birthDate = 0;
     }
-    public Animal(Animal firstParent, Animal secondParent, int startingEnergy, boolean mutation, AbstractWorldMap map, boolean isShuffle, int birthDate) {
-        this.genotype = new Genotype(firstParent.getGenotype().getGenotypeList(), firstParent.getEnergy(), secondParent.getGenotype().getGenotypeList(), secondParent.getEnergy(), mutation);
+    public Animal(Animal firstParent, Animal secondParent, int startingEnergy, boolean mutation, AbstractWorldMap map, boolean isShuffle, int birthDate, int minMutation, int maxMutation) {
+        this.genotype = new Genotype(firstParent.getGenotype().getGenotypeList(), firstParent.getEnergy(), secondParent.getGenotype().getGenotypeList(), secondParent.getEnergy(), mutation, minMutation, maxMutation);
         this.energy = startingEnergy;
         this.location = new Vector2d(firstParent.getLocation().getX(), firstParent.getLocation().getY());
         this.direction = this.direction.intToDirection((int) (Math.random() * 8));
@@ -67,6 +67,7 @@ public class Animal implements IMapElement {
     }
     public void addGrass() {this.grassCount+=1;}
     public void die(int deathDate){this.deathDate = deathDate;}
+    public int getLifespan(){return (this.deathDate-this.birthDate);}
     public int getGenotypePosition() {
         return genotypePosition;
     }

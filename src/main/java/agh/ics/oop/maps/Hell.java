@@ -9,13 +9,16 @@ import java.util.HashMap;
 
 public class Hell extends AbstractWorldMap {
 
-    public Hell(int x, int y, int copulationCost, boolean mutation, IGrassGenerator grassGenerator, int grassEnergy, int grassSpawnAmount, int minEnergy){
+    public Hell(int x, int y, int copulationCost, boolean mutation, IGrassGenerator grassGenerator, int grassEnergy, int grassSpawnAmount, int minEnergy, int plantsAtStart, int minMutation, int maxMutation){
         this.upperRight = new Vector2d(x-1, y-1);
         this.copulationCost = copulationCost;
         this.mutation = mutation;
+        this.minMutation = minMutation;
+        this.maxMutation = maxMutation;
         this.grassGenerator = grassGenerator;
         this.grassEnergy = grassEnergy;
         this.grassSpawnAmount = grassSpawnAmount;
+        this.plantsAtStart = plantsAtStart;
         this.minEnergy = minEnergy;
         this.animalPositions = new HashMap<>();
         this.plantPositions = new HashMap<>();
@@ -39,7 +42,7 @@ public class Hell extends AbstractWorldMap {
             animal.changeEnergy((-1)*this.copulationCost);
         }
 
-        this.removeAnimal(animal);
+        this.replaceAnimal(animal);
         animal.setLocation(moveTo);
         this.place(animal);
     }

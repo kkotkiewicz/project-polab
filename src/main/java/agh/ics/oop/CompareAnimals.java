@@ -13,15 +13,15 @@ public class CompareAnimals implements Comparator<Animal> {
                     return 1;
                 }
                 else{
-                    return animal1.getChildrenCount()-animal2.getChildrenCount();
+                    return animal2.getChildrenCount()-animal1.getChildrenCount();
                 }
             }
             else{
-                return animal1.getBirthDate() - animal2.getBirthDate();
+                return animal2.getBirthDate() - animal1.getBirthDate();
             }
         }
         else{
-            return animal1.getEnergy() - animal2.getEnergy();
+            return animal2.getEnergy() - animal1.getEnergy();
         }
     }
 }
