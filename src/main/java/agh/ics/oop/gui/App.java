@@ -57,7 +57,7 @@ public class App extends Application {
     private void configureFileChooser(FileChooser fileChooser){
         fileChooser.setTitle("Przeglądaj plik");
         fileChooser.setInitialDirectory(
-                new File(System.getProperty("user.home"))
+                new File("./src/main/resources/configurationFiles")
         );
     }
 
@@ -106,7 +106,7 @@ public class App extends Application {
         });
 
 
-        primaryStage.setOnCloseRequest(e -> {
+        stage.setOnCloseRequest(e -> {
             Platform.exit();
             System.exit(0);
         });
@@ -133,6 +133,12 @@ public class App extends Application {
         thread.start();
 
         stage.setOnCloseRequest(e -> {
+            try {
+                parameters.getSimulationEngine().getFileWriter().close();
+            }
+            catch (IOException exception) {
+                System.out.println(exception);
+            }
             thread.stop();
         });
 
@@ -142,7 +148,7 @@ public class App extends Application {
 
         parameters.setRunning(true);
 
-
+        Button highlightButton = new Button("Show dominant genotype");
         Button stopButton = new Button("Stop");
         stopButton.setOnAction(event -> {
             if (parameters.getIsRunning()) {
@@ -157,12 +163,29 @@ public class App extends Application {
             }
         });
 
+        highlightButton.setOnAction(event -> {
+            if (!parameters.isHighlighted()) {
+                highlightButton.setText("Hide dominant genotype");
+                parameters.setHighlighted(true);
+                parameters.refresh();
+            }
+            else {
+                highlightButton.setText("Show dominant genotype");
+                parameters.setHighlighted(false);
+                parameters.refresh();
+
+            }
+        });
+
+        HBox hBox = new HBox();
+        hBox.setSpacing(100);
+        hBox.getChildren().addAll(stopButton, highlightButton);
         parameters.createGrid();
 
         VBox container = new VBox();
         container.getChildren().add(stopButton);
         container.getChildren().add(parameters.getGridPane());
-        parameters.getvBox().getChildren().add(stopButton);
+        parameters.getvBox().getChildren().add(hBox);
         parameters.getvBox().getChildren().add(container);
         parameters.getvBox().getChildren().add(parameters.getBottomBox());
         scene = new Scene(parameters.getvBox(), 1200, 900);

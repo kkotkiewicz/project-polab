@@ -1,0 +1,17 @@
+width:40
+height:30
+map:hell
+grassGenerator:toxic
+numOfPlants:30
+plantEnergy:20
+numOfAnimals:20
+startingEnergy:40
+minEnergy:15
+copulationCost:10
+genotypeLength:7
+mutation:true
+isShuffle:true
+plantsAtStart:50
+minMutation:3
+maxMutation:6
+moveDelay:50

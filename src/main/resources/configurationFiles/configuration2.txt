@@ -1,0 +1,17 @@
+width:20
+height:20
+map:earth
+grassGenerator:Equator
+numOfPlants:15
+plantEnergy:8
+numOfAnimals:15
+startingEnergy:30
+minEnergy:15
+copulationCost:10
+genotypeLength:15
+mutation:true
+isShuffle:false
+plantsAtStart:40
+minMutation:0
+maxMutation:3
+moveDelay:100

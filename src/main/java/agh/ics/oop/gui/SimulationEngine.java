@@ -2,11 +2,17 @@ package agh.ics.oop.gui;
 
 //import agh.ics.oop.gui.app;
 
+import agh.ics.oop.mapElements.IMapElement;
 import agh.ics.oop.maps.AbstractWorldMap;
 import agh.ics.oop.mapElements.Animal;
 import agh.ics.oop.attributes.Vector2d;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class SimulationEngine implements Runnable{
@@ -23,6 +29,11 @@ public class SimulationEngine implements Runnable{
     private double averageLifespan = 0;
     private String mostCommonGene="";
     private int freeSpace = 0;
+    File csvFile;
+    FileWriter fileWriter;
+    ArrayList<IMapElement> animalList;
+
+
 
 //    private MapVisualizer visualizer;
 
@@ -66,6 +77,19 @@ public class SimulationEngine implements Runnable{
         return this.freeSpace;
     }
 
+    private void updateAnimalsDominant() {
+        animalList = new ArrayList<>();
+        for (Animal animal : animals) {
+            if (animal.getGenotype().toString().equals(mostCommonGene)) {
+                animalList.add(animal);
+            }
+        }
+    }
+
+    public ArrayList<IMapElement> getAnimalsDominant() {
+        return animalList;
+    }
+
 
 
 
@@ -93,8 +117,20 @@ public class SimulationEngine implements Runnable{
         this.genotypeLength = genotypeLength;
         this.moveDelay = moveDelay;
         this.isShuffle = isShuffle;
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss");
+        Date date = new Date();
+        this.csvFile = new File("./src/main/resources/simulationFiles/symulacja" + formatter.format(date) +".csv");
+        try{
+            this.fileWriter = new FileWriter(csvFile);
+            this.fileSetup();
+        }
+        catch(IOException e){
+            System.out.println(e.getMessage());
+        }
+
 //        this.visualizer = visualizer;
         generateAnimals(numOfAnimals);
+        animalList = new ArrayList<>();
     }
 
     public void generateAnimals(int numOfAnimals) {
@@ -109,8 +145,47 @@ public class SimulationEngine implements Runnable{
         this.map.generateGrass();
     }
 
+    public void fileSetup(){
+        StringBuilder stringBuilder = new StringBuilder();
+        String[] data = {"dzien", "Ilosc zwierzakow", "Ilosc roslinek", "Srednia energia", "Sredni czas zycia", "Ilosc wolnych pol", "Najpopularniejszy gen"};
+        for(int i=0; i<data.length; i++){
+            stringBuilder.append("\"");
+            stringBuilder.append(data[i].replaceAll("\"", "\"\""));
+            stringBuilder.append("\"");
+            if(i != data.length-1){
+                stringBuilder.append(',');
+            }
+        }
+        stringBuilder.append("\n");
+        try{
+            fileWriter.write(stringBuilder.toString());
+        }
+        catch(IOException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
     public void writeToCSV(){
-        
+        StringBuilder stringBuilder = new StringBuilder();
+        String[] data = {Integer.toString(map.getDaysPassed()) ,Integer.toString(this.numOfAnimals), Integer.toString(this.numOfPlants), Integer.toString(this.averageEnergy)
+                , Double.toString(this.averageLifespan), Integer.toString(this.freeSpace), this.mostCommonGene};
+        for(int i=0; i<data.length; i++){
+            stringBuilder.append("\"");
+            stringBuilder.append(data[i].replaceAll("\"", "\"\""));
+            stringBuilder.append("\"");
+            if(i != data.length-1){
+                stringBuilder.append(',');
+            }
+        }
+        stringBuilder.append("\n");
+        try{
+            fileWriter.write(stringBuilder.toString());
+        }
+        catch(IOException e){
+            System.out.println(e.getMessage());
+        }
+
+
     }
 
     @Override
@@ -136,7 +211,7 @@ public class SimulationEngine implements Runnable{
 
 
             try {
-                Thread.sleep(50);
+                Thread.sleep(this.moveDelay);
                 refreshObserver();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
@@ -148,11 +223,14 @@ public class SimulationEngine implements Runnable{
             this.uptadeAverageEnergy();
             this.averageLifespan = map.getAverageLifespan();
             this.freeSpace = map.getFreeSpace();
-
+            this.updateAnimalsDominant();
+            this.writeToCSV();
             map.nextDay();
 
-
-
         }
+    }
+
+    public FileWriter getFileWriter() {
+        return fileWriter;
     }
 }

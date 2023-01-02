@@ -1,0 +1,17 @@
+width:20
+height:20
+map:hell
+grassGenerator:Equator
+numOfPlants:15
+plantEnergy:15
+numOfAnimals:15
+startingEnergy:30
+minEnergy:15
+copulationCost:10
+genotypeLength:15
+mutation:true
+isShuffle:false
+plantsAtStart:20
+minMutation:1
+maxMutation:3
+moveDelay:70

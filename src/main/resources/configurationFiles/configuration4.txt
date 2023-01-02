@@ -1,0 +1,17 @@
+width:60
+height:60
+map:earth
+grassGenerator:toxic
+numOfPlants:30
+plantEnergy:15
+numOfAnimals:50
+startingEnergy:40
+minEnergy:20
+copulationCost:15
+genotypeLength:10
+mutation:true
+isShuffle:true
+plantsAtStart:500
+minMutation:0
+maxMutation:3
+moveDelay:50

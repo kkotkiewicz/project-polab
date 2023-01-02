@@ -6,6 +6,7 @@ import agh.ics.oop.grassGenerators.EquatorGrassGenerator;
 import agh.ics.oop.grassGenerators.IGrassGenerator;
 import agh.ics.oop.grassGenerators.ToxicGrassGenerator;
 import agh.ics.oop.mapElements.Animal;
+import agh.ics.oop.mapElements.IMapElement;
 import agh.ics.oop.maps.AbstractWorldMap;
 import agh.ics.oop.maps.Earth;
 import agh.ics.oop.maps.Hell;
@@ -19,6 +20,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SimulationParameters {
@@ -37,6 +39,7 @@ public class SimulationParameters {
     private GridPane gridPane = new GridPane();
     private boolean isObserved = false;
     private int radius;
+    private boolean isHighlighted = false;
 
 
     public SimulationParameters(HashMap<String, String> parameters) {
@@ -58,6 +61,7 @@ public class SimulationParameters {
         int genotypeLength = Integer.parseInt(parameters.get("genotypeLength"));
         int minMutation = Integer.parseInt(parameters.get("minMutation"));
         int maxMutation = Integer.parseInt(parameters.get("maxMutation"));
+        int moveDelay = Integer.parseInt(parameters.get("moveDelay"));
         boolean mutation = false;
         if(parameters.get("mutation").equals("true")){
             mutation = true;
@@ -72,7 +76,7 @@ public class SimulationParameters {
         else{
             this.map = new Hell(width, height, copulationCost, mutation, grassGenerator, plantEnergy, minEnergy, numOfPlants, plantsAtStart, minMutation, maxMutation);
         }
-        this.simulationEngine = new SimulationEngine(this.map, numOfAnimals, startingEnergy, genotypeLength, 10, isShuffle);
+        this.simulationEngine = new SimulationEngine(this.map, numOfAnimals, startingEnergy, genotypeLength, moveDelay, isShuffle);
         simulationEngine.addObserver(this);
         this.upperRight = this.map.getUpperRight();
         this.radius = ((this.height/(this.upperRight.getY()+1))/3);
@@ -93,7 +97,12 @@ public class SimulationParameters {
             gridPane.getColumnConstraints().clear();
             gridPane.getRowConstraints().clear();
             gridPane.setGridLinesVisible(false);
-            createGrid();
+            if (isHighlighted) {
+                createGridWithGenes();
+            }
+            else {
+                createGrid();
+            }
             if (isObserved) {
                 refreshAnimal();
             }
@@ -190,6 +199,7 @@ public class SimulationParameters {
     public void refreshSimulationParameters() {
         this.simulationInformation.getChildren().clear();
 
+
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append(this.simulationEngine.getNumOfAnimals());
@@ -222,6 +232,68 @@ public class SimulationParameters {
         stringBuilder.delete(0, stringBuilder.length());
 
 
+    }
+
+    public void createGridWithGenes() {
+        int height = this.height/(this.upperRight.getY()+1);
+        int width = this.height/(this.upperRight.getY()+1);
+
+        ArrayList<IMapElement> dominantAnimals = this.simulationEngine.getAnimalsDominant();
+
+
+        Label firstLabel = new Label("x/y");
+
+        gridPane.getColumnConstraints().add(new ColumnConstraints(width));
+
+        GridPane.setHalignment(firstLabel, HPos.CENTER);
+
+        gridPane.getRowConstraints().add(new RowConstraints(height));
+
+        gridPane.add(firstLabel, 0,0,1,1);
+
+
+        Vector2d lowerLeft = new Vector2d(0,0);
+        Vector2d upperRight = map.getUpperRight();
+
+
+        for (int i = lowerLeft.getX(); i <= upperRight.getX(); i++) {
+            Label label = new Label("" + i);
+            gridPane.add(label, 1 + i - lowerLeft.getX(), 0, 1, 1);
+            gridPane.getColumnConstraints().add(new ColumnConstraints(width));
+            GridPane.setHalignment(label, HPos.CENTER);
+
+        }
+
+        for (int i = upperRight.getY(); i >= lowerLeft.getY(); i--) {
+            Label label = new Label("" + i);
+            gridPane.add(label, 0, 1 + upperRight.getY() - i, 1 , 1);
+            gridPane.getRowConstraints().add(new RowConstraints(height));
+            GridPane.setHalignment(label, HPos.CENTER);
+        }
+
+        for (int i = lowerLeft.getX(); i <= upperRight.getX(); i++) {
+            for (int j = upperRight.getY(); j>= lowerLeft.getY(); j--) {
+                if (map.isOccupied(new Vector2d(i,j))) {
+                    IMapElement object = map.objectAt(new Vector2d(i,j));
+                    Circle circle = map.objectAt(new Vector2d(i,j)).toShape(this.simulationEngine.getStartingEnergy(), radius);
+                    circle.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> clickGrid(e));
+                    if (map.objectAt(new Vector2d(i, j)).equals(observedAnimal)) {
+                        circle.setFill(Color.BLUE);
+                        circle.setRadius(1.5 * radius);
+                    }
+                    if (map.objectAt(new Vector2d(i,j)).getClass() == Animal.class) {
+                        if (dominantAnimals.contains(object)) {
+                            circle.setFill(Color.PINK);
+                            circle.setRadius(1.5 * radius);
+                        }
+                    }
+                    gridPane.add(circle, 1 + i - lowerLeft.getX(), 1 + upperRight.getY() - j,1,1);
+                    GridPane.setHalignment(circle, HPos.CENTER);
+                }
+
+            }
+        }
+        gridPane.setGridLinesVisible(true);
     }
 
     public void createGrid() {
@@ -305,5 +377,12 @@ public class SimulationParameters {
     }
     public HBox getBottomBox() {
         return bottomBox;
+    }
+
+    public boolean isHighlighted() {
+        return isHighlighted;
+    }
+    public void setHighlighted(boolean flag) {
+        isHighlighted = flag;
     }
 }
